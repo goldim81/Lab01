@@ -1,6 +1,7 @@
 package com.lab01;
 
 import java.io.*;
+import java.util.Random;
 import java.util.regex.Pattern;
 
 public class Reader implements Runnable {
@@ -31,28 +32,23 @@ public class Reader implements Runnable {
         if (file.exists()) {
             String line;
             try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-                while ((line = br.readLine()) != null) {
-                    if (!Main.stopAll) {
-                        if (!stopPattern.matcher(line).find()) {
-                            String[] str = line.split(splitPattern);
-                            for (String s : str) {
-                                if (s.equals("")) continue;
-                                synchronized (wordStore) {
-                                    if (!wordStore.addWord(s)) {
-                                        System.out.println(threadName + ": Найдено неуникальное слово - " + s + ". Останавливаем поток.");
+                while ((line = br.readLine()) != null & !Main.stopAll) {
+                    if (!stopPattern.matcher(line).find()) {
+                        String[] str = line.split(splitPattern);
+                        for (int i = 0; i <str.length & !Main.stopAll ; i++) {
+                            if (str[i].equals("")) continue;
+                            synchronized (wordStore) {
+                                if (!wordStore.addWord(str[i])) {
+                                    System.out.println(threadName + ": Найдено неуникальное слово - " + str[i] + ". Останавливаем поток.");
 
-                                        Main.stopAll = true;
-                                        break;
-                                    }
+                                    Main.stopAll = true;
+                                    break;
                                 }
                             }
-                        } else {
-                            System.out.println(threadName + ": В тексте найдена латиница. Останавливаем поток.");
-                            Main.stopAll = true;
-                            break;
                         }
                     } else {
-                        System.out.println(threadName + ": Найден признак остановки программы. Останавливаем поток.");
+                        System.out.println(threadName + ": В тексте найдена латиница. Останавливаем поток.");
+                        Main.stopAll = true;
                         break;
                     }
                 }
@@ -64,6 +60,7 @@ public class Reader implements Runnable {
         } else {
             System.out.println(threadName + ": Указанный Файл не существует.");
         }
+        if (Main.stopAll) System.out.println(threadName + ": Найден признак остановки программы. Останавливаем поток.");
         System.out.println(threadName + " остановлен.");
     }
 }
