@@ -3,7 +3,8 @@ package com.lab01;
 import java.util.concurrent.Semaphore;
 
 public class Main {
-    private static final Object endFlag = new Object();
+    private static Object endFlag = new Object();
+    public volatile static boolean stopAll = false;
 
     public static void main(String[] args) throws InterruptedException {
         WordStore ws = new WordStore();
