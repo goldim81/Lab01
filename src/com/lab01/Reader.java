@@ -1,24 +1,20 @@
 package com.lab01;
 
 import java.io.*;
-import java.util.concurrent.Semaphore;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Reader implements Runnable {
     private static int threadNum = 0;
     private final String threadName;
     private final String fileName;
-    private final String splitPattern = "[\\s|,|.|:|;|!|?]+";
+    private final String splitPattern = "[\\s|,|.|:|;|!|?|«|»|-|\"|\"|%|0-9|(|)|—]+";
     private final Pattern stopPattern = Pattern.compile("[a-zA-Z]+");
     private final WordStore wordStore;
-    private final Semaphore semaphore;
 
-    public Reader(String fileName, WordStore wordStore, Semaphore semaphore) {
+    public Reader(String fileName, WordStore wordStore) {
         threadName = "Thread"+ (++threadNum);
         this.fileName = fileName;
         this.wordStore = wordStore;
-        this.semaphore = semaphore;
     }
 
     @Override
@@ -33,21 +29,22 @@ public class Reader implements Runnable {
                             String[] str = line.split(splitPattern);
 
                             for (String s:str) {
+                                if (s.equals("")) continue;
                                 synchronized (wordStore) {
                                     if (!wordStore.addWord(s)) {
-                                        System.out.println(threadName + ": Найдено неуникальное слово - "+s+". Останавлеваем поток.");
+                                        System.out.println(threadName + ": Найдено неуникальное слово - "+s+". Останавливаем поток.");
                                         Main.stopAll = true;
                                         break;
                                     }
                                 }
                             }
                         } else {
-                            System.out.println(threadName + ": В тексте найдена латиница. Останавлеваем поток.");
+                            System.out.println(threadName + ": В тексте найдена латиница. Останавливаем поток.");
                             Main.stopAll = true;
                             break;
                         }
                     } else {
-                        System.out.println(threadName + ": Найден признак остановки программы. Останавлеваем поток.");
+                        System.out.println(threadName + ": Найден признак остановки программы. Останавливаем поток.");
                         break;
                     }
                 }
@@ -59,6 +56,6 @@ public class Reader implements Runnable {
         } else {
             System.out.println(threadName + ": Указанный Файл не существует.");
         }
-        semaphore.release();
+        Main.endThreadFlag++;
     }
 }

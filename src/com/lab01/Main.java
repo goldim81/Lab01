@@ -1,21 +1,23 @@
 package com.lab01;
 
-import java.util.concurrent.Semaphore;
-
 public class Main {
-    private static Object endFlag = new Object();
+    public volatile static int endThreadFlag =0;
     public volatile static boolean stopAll = false;
 
     public static void main(String[] args) throws InterruptedException {
         WordStore ws = new WordStore();
-        Semaphore s = new Semaphore(1-args.length);
+        endThreadFlag -= args.length;
         for (String arg: args) {
-            new Thread(new Reader(arg, ws, s)).start();
+            new Thread(new Reader(arg, ws)).start();
         }
-        s.acquire();
+        //Ждем завершения всех потоков
+        while (endThreadFlag <0) {
+            Thread.sleep(500);
+        }
         for (String str:ws.getWordStore()) {
             System.out.println(str);
         }
+        System.out.println("Всего уникальных слов: " + ws.getWordStore().size());
 
     }
 }

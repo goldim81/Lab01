@@ -12,8 +12,4 @@ public class WordStore {
     public boolean addWord(String word){
         return wordStore.add(word);
     }
-
-    public boolean addWords(String[] words){
-        return wordStore.addAll(Arrays.asList(words));
-    }
 }
