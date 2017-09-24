@@ -27,6 +27,5 @@ public class Main {
             }
             System.out.println("Всего уникальных слов: " + ws.getWordStore().size());
         }
-
     }
 }
