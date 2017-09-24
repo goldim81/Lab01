@@ -7,18 +7,26 @@ public class Reader implements Runnable {
     private static int threadNum = 0;
     private final String threadName;
     private final String fileName;
-    private final String splitPattern = "[\\s|,|.|:|;|!|?|«|»|-|\"|\"|%|0-9|(|)|—]+";
+    private final Pattern fileNamePattern = Pattern.compile("[\\w.]+\\.txt");
+
+    private final String splitPattern = "[\\s|,|.|:|;|!|?|«|»|-|\"|\"|%|0-9|(|)|—|@|#|$|%|^|&|*|+|]+";
     private final Pattern stopPattern = Pattern.compile("[a-zA-Z]+");
     private final WordStore wordStore;
 
     public Reader(String fileName, WordStore wordStore) {
-        threadName = "Thread"+ (++threadNum);
+        threadName = "Thread" + (++threadNum);
         this.fileName = fileName;
         this.wordStore = wordStore;
     }
 
     @Override
     public void run() {
+        System.out.println(threadName + " запущен.");
+        if (!fileNamePattern.matcher(fileName).matches()) {
+            System.out.println(threadName + ": Шаблон имени файла не соответсвует заданному (*.txt).");
+            System.out.println(threadName + " остановлен.");
+            return;
+        }
         File file = new File(fileName);
         if (file.exists()) {
             String line;
@@ -27,12 +35,12 @@ public class Reader implements Runnable {
                     if (!Main.stopAll) {
                         if (!stopPattern.matcher(line).find()) {
                             String[] str = line.split(splitPattern);
-
-                            for (String s:str) {
+                            for (String s : str) {
                                 if (s.equals("")) continue;
                                 synchronized (wordStore) {
                                     if (!wordStore.addWord(s)) {
-                                        System.out.println(threadName + ": Найдено неуникальное слово - "+s+". Останавливаем поток.");
+                                        System.out.println(threadName + ": Найдено неуникальное слово - " + s + ". Останавливаем поток.");
+
                                         Main.stopAll = true;
                                         break;
                                     }
@@ -56,6 +64,6 @@ public class Reader implements Runnable {
         } else {
             System.out.println(threadName + ": Указанный Файл не существует.");
         }
-        Main.endThreadFlag++;
+        System.out.println(threadName + " остановлен.");
     }
 }
