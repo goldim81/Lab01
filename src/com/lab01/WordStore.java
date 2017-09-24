@@ -9,7 +9,7 @@ public class WordStore {
         return wordStore;
     }
 
-    public boolean addWord(String word){
+    public synchronized boolean addWord(String word){
         return wordStore.add(word);
     }
 }
