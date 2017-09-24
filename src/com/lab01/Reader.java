@@ -35,6 +35,7 @@ public class Reader implements Runnable {
                 while ((line = br.readLine()) != null & !Main.stopAll) {
                     if (!stopPattern.matcher(line).find()) {
                         String[] str = line.split(splitPattern);
+                        //Засунул допусловие в условие цикла для избавления от лишнего IF
                         for (int i = 0; i <str.length & !Main.stopAll ; i++) {
                             if (str[i].equals("")) continue;
                             synchronized (wordStore) {
