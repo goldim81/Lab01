@@ -35,7 +35,7 @@ public class Reader implements Runnable {
         System.out.println(threadName + " остановлен.");
     }
 
-    private boolean checkFileExist(File file) {
+    protected boolean checkFileExist(File file) {
         if (!file.exists()) {
             System.out.println(threadName + ": Указанный Файл не существует.");
             System.out.println(threadName + " остановлен.");
@@ -44,7 +44,7 @@ public class Reader implements Runnable {
         return true;
     }
 
-    private boolean checkFileName(String fName) {
+    protected boolean checkFileName(String fName) {
         if (!fileNamePattern.matcher(fName).matches()) {
             System.out.println(threadName + ": Шаблон имени файла не соответсвует заданному (*.txt).");
             System.out.println(threadName + " остановлен.");
@@ -53,7 +53,7 @@ public class Reader implements Runnable {
         return true;
     }
 
-    private void processingFile(File file) {
+    protected void processingFile(File file) {
         String line;
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             while ((line = br.readLine()) != null & !stopAll) {
@@ -71,22 +71,23 @@ public class Reader implements Runnable {
         }
     }
 
-    private void saveWordInStorage(String[] str, WordStorage store) {
+    protected void saveWordInStorage(String[] str, WordStorage storage) {
         for (int i = 0; i < str.length & !stopAll; i++) {
             //Пропускаем пустые строки , результат slit'а
             if (str[i].equals("")) continue;
             /*Пропускаем числа, хотя с ними непонятно. Это не слово,
              но по условию они могут содержаться в тексте*/
             if (isDigital(str[i])) continue;
-            if (!wordStorage.addWord(str[i])) {
+            if (!storage.addWord(str[i])) {
                 System.out.println(threadName + ": Найдено не уникальное слово - " + str[i] + ". Останавливаем поток.");
                 stopAll = true;
                 break;}
         }
     }
 
-    private boolean isDigital(String input) {
+    protected boolean isDigital(String input) {
         if (digitsPattern.matcher(input).matches()) return true;
         return false;
     }
+
 }

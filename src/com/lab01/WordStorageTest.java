@@ -16,7 +16,6 @@ class WordStorageTest {
 
     @Test
     void getWordStorage() {
-
         wordStorage.addWord("Тест");
         assertEquals(1, wordStorage.getWordStorage().size());
     }
