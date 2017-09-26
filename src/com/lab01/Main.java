@@ -2,8 +2,6 @@ package com.lab01;
 
 public class Main {
 
-    public volatile static boolean stopAll = false;
-
     public static void main(String[] args) throws InterruptedException {
         long startTime = System.currentTimeMillis();
         WordStorage ws = new WordStorage();
@@ -31,11 +29,10 @@ public class Main {
 //        while (!service.isTerminated()) {
 ////            Thread.sleep(100);
 //        }
-
-
         for (String str : ws.getWordStorage()) {
-            System.out.println(str);
+            System.out.print(str + ", ");
         }
+        System.out.println();
         System.out.println("Всего уникальных слов: " + ws.getWordStorage().size());
 
         System.out.println("Время выполнения: " + (System.currentTimeMillis()-startTime));

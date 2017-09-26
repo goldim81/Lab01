@@ -63,12 +63,17 @@ public class Reader implements Runnable {
                     System.out.println(threadName + ": В тексте найдена латиница. Останавливаем поток.");
                     stopAll = true;
                     break;}
+                printStorageSize();
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private void printStorageSize(){
+        System.out.println(threadName + ": Количество слов в хранилище:" + wordStorage.getWordStorage().size());
     }
 
     protected void saveWordInStorage(String[] str, WordStorage storage) {

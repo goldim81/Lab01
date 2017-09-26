@@ -4,15 +4,16 @@ import java.util.*;
 
 public class WordStorage {
     //Среднее время выполнения 86,9
-//    private CopyOnWriteArraySet<String> wordStore = new CopyOnWriteArraySet<>();
+//    private CopyOnWriteArraySet<String> wordStorage = new CopyOnWriteArraySet<>();
     //Среднее время выполнения 53,3
-    private Set<String> wordStore = new HashSet<>();
+    private Set<String> wordStorage = new HashSet<>();
 
-    public Set<String> getWordStorage() {
-        return wordStore;
+    public synchronized Set<String> getWordStorage() {
+        return wordStorage;
     }
 
     public synchronized boolean addWord(String word){
-        return wordStore.add(word);
+        return wordStorage.add(word);
     }
+
 }
