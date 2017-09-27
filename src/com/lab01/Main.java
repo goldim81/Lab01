@@ -9,21 +9,6 @@ public class Main {
         long startTime = System.currentTimeMillis();
         WordStorage ws = new WordStorage();
 
-//        Thread[] threads = new Thread[args.length];
-//        for (int i = 0; i < args.length; i++) {
-//            threads[i] = new Thread(new Reader(args[i], ws));
-//            threads[i].start();
-//        }
-////        Ждем завершения всех потоков
-//        for (Thread thread : threads) {
-//            try {
-//                thread.join();
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
-//        }
-
-
         ExecutorService service = Executors.newCachedThreadPool();
         for(String arg:args){
             service.submit(new Reader(arg, ws));
