@@ -1,11 +1,12 @@
 package com.lab01;
 
 import java.io.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Pattern;
 
 public class Reader implements Runnable {
-    private static volatile boolean stopAll;
-    private static int threadNum = 0;
+    private static AtomicBoolean stopAll = new AtomicBoolean(false);
+    private volatile static int threadNum = 0;
     private final String threadName;
     private final String fileName;
     private final Pattern fileNamePattern = Pattern.compile("[\\w.]+\\.txt");
@@ -31,7 +32,7 @@ public class Reader implements Runnable {
         //Основной код обработки файла
         processingFile(file);
 
-        if (stopAll) System.out.println(threadName + ": Найден признак остановки программы. Останавливаем поток.");
+        if (stopAll.get()) System.out.println(threadName + ": Найден признак остановки программы. Останавливаем поток.");
         System.out.println(threadName + " остановлен.");
     }
 
@@ -56,14 +57,14 @@ public class Reader implements Runnable {
     protected void processingFile(File file) {
         String line;
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-            while ((line = br.readLine()) != null & !stopAll) {
+            while ((line = br.readLine()) != null & !stopAll.get()) {
                 if (!stopPattern.matcher(line).find()) {
                     saveWordInStorage(line.split(splitPattern), wordStorage);
                 } else {
                     System.out.println(threadName + ": В тексте найдена латиница. Останавливаем поток.");
-                    stopAll = true;
+                    stopAll.set(true);
                     break;}
-                printStorageSize();
+//                printStorageSize();
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -77,7 +78,7 @@ public class Reader implements Runnable {
     }
 
     protected void saveWordInStorage(String[] str, WordStorage storage) {
-        for (int i = 0; i < str.length & !stopAll; i++) {
+        for (int i = 0; i < str.length & !stopAll.get(); i++) {
             //Пропускаем пустые строки , результат slit'а
             if (str[i].equals("")) continue;
             /*Пропускаем числа, хотя с ними непонятно. Это не слово,
@@ -85,7 +86,7 @@ public class Reader implements Runnable {
             if (isDigital(str[i])) continue;
             if (!storage.addWord(str[i])) {
                 System.out.println(threadName + ": Найдено не уникальное слово - " + str[i] + ". Останавливаем поток.");
-                stopAll = true;
+                stopAll.set(true);
                 break;}
         }
     }
